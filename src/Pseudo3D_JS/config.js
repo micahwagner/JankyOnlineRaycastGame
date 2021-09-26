@@ -5,6 +5,7 @@ var eagle = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/eagle.png", [168, 0, 0]
 var sky = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/skybox2.png", [109, 210, 255]);
 var barrel = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/barrel.png", [65, 26, 6]);
 var wood = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/wood.png", [110, 74, 29]);
+var Boonga = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Boonga.png")
 
 var config = {
 	floor: {

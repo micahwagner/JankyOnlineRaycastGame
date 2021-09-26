@@ -35,7 +35,7 @@ function start() {
 	Client.sendMe(camera.position.x, camera.position.y);
 }
 
-star();
+start();
 
 // main update loop
 function animate() {
@@ -96,7 +96,7 @@ window.addEventListener("keyup", (e) => {
 animate();
 
 function addNewPlayer(id,x,y) {
-	var player = new Pseudo3D.Sprite(barrel,[x,y]);
+	var player = new Pseudo3D.Sprite(Boonga,[x,y]);
 	player.partialAlpha = false;
 	playerMap[id] = player;
 	scene.add(player)
