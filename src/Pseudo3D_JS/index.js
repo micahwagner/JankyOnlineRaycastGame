@@ -78,9 +78,6 @@ function animate() {
 			Client.sendPos(camera.position.x, camera.position.y)
 		}
 	}
-	if(window.myID) {
-		deleteSelf();
-	}
 	frameCount++;
 }
 // key press code
@@ -116,6 +113,3 @@ function moveOtherPlayer(id,x,y) {
 	playerMap[id].position.y = y;
 }
 
-function deleteSelf() {
-	removePlayer(myID);
-}

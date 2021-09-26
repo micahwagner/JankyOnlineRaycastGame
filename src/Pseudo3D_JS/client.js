@@ -26,9 +26,20 @@ Client.socket.on('newplayer',function(data){
     addNewPlayer(data.id,data.x,data.y);
 });
 
+Client.socket.on('myID', function(id){
+    window.myID = id;
+});
+
+Client.socket.on('updatePlayers', function(data){
+    console.log(data)
+});
+
+
 Client.socket.on('allplayers',function(data){
     for(var i = 0; i < data.length; i++){
-        addNewPlayer(data[i].id,data[i].x,data[i].y);
+        if(data[i].id !== window.myID) {
+            addNewPlayer(data[i].id,data[i].x,data[i].y);
+        }
     }
 
     Client.socket.on('move',function(data){
@@ -37,10 +48,6 @@ Client.socket.on('allplayers',function(data){
 
     Client.socket.on('remove',function(id){
         removePlayer(id);
-    });
-
-    Client.socket.on('myID', function(id){
-        window.myID = id;
     });
 });
 

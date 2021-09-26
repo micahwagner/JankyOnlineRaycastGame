@@ -2,12 +2,12 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
+const Game = require('./Game');
 
-app.use('/css',express.static(__dirname + '/css'));
-app.use('/src',express.static(__dirname + '/src'));
-
+app.use('/css',express.static(process.cwd() + '/css'));
+app.use('/src',express.static(process.cwd() + '/src'));
 app.get('/',function(req,res){
-    res.sendFile(__dirname+'/index.html');
+    res.sendFile(process.cwd()+'/index.html');
 });
 
 server.lastPlayderID = 0;
@@ -18,14 +18,20 @@ server.listen(process.env.PORT || 8081, "10.0.0.17", function(){
 
 io.on('connection',function(socket){
 
+    // console.log(socket.id);
+
+
+    // socket.on("newplayer", playerJoined);
+    // socket.on("disconnect", playerLeft);
+
     socket.on('newplayer',function(data){
         socket.player = {
             id: server.lastPlayderID++,
             x: data.x,
-            y: data.y
+            y: data.y,
         };
-        socket.emit('allplayers',getAllPlayers());
         socket.emit('myID', socket.player.id);
+        socket.emit('allplayers',getAllPlayers());
         socket.broadcast.emit('newplayer',socket.player);
 
         socket.on('sendPos',function(data){
@@ -43,6 +49,16 @@ io.on('connection',function(socket){
         console.log('test received');
     });
 });
+
+// var game = new Game();
+
+// function playerJoined(data) {
+//     game.addPlayer(this, data);
+// }
+
+// function playerLeft() {
+//     game.removePlayer(this);
+// }
 
 function getAllPlayers(){
     var players = [];
