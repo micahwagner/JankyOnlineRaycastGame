@@ -19,7 +19,7 @@ var camera = new Pseudo3D.Camera({
 var stop = false;
 var fps = 60, // can only be a factor of 60 when below 30, and when above 30 can only be 60 - fps factor of 60 to work. 
 	frameCount = 0,
-	skipFrames, 
+	skipFrames,
 	frameRate = 0;
 // list of valid values for fps are: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 40, 45, 48, 50, 54, 55, 56, 57, 58, 59, 60
 
@@ -54,10 +54,34 @@ function animate() {
 			camera.rotate(-270 / fps);
 		}
 		if (keysDown["w"]) {
-			camera.position.add(camera.direction.clone().scale(4 / fps));
+			var incrementX = camera.direction.x * (4 / fps + 0.2);
+			var incrementY = camera.direction.y * (4 / fps + 0.2);
+
+			var worldX = Math.floor(camera.position.x);
+			var worldY = Math.floor(camera.position.y);
+
+			var checkX = Math.floor(camera.position.x + incrementX);
+			var checkY = Math.floor(camera.position.y + incrementY);
+
+			if (scene.worldMap[checkX] !== undefined && scene.worldMap[checkX][worldY] !== undefined && scene.worldMap[checkX][worldY] === 0)
+				camera.position.x += camera.direction.x * (4 / fps);
+			if (scene.worldMap[worldX] !== undefined && scene.worldMap[worldX][checkY] !== undefined && scene.worldMap[worldX][checkY] === 0)
+				camera.position.y += camera.direction.y * (4 / fps);
 		}
 		if (keysDown["s"]) {
-			camera.position.subtract(camera.direction.clone().scale(4 / fps));
+			var incrementX = camera.direction.x * (4 / fps + 0.2);
+			var incrementY = camera.direction.y * (4 / fps + 0.2);
+
+			var worldX = Math.floor(camera.position.x);
+			var worldY = Math.floor(camera.position.y);
+
+			var checkX = Math.floor(camera.position.x - incrementX);
+			var checkY = Math.floor(camera.position.y - incrementY);
+
+			if (scene.worldMap[checkX] !== undefined && scene.worldMap[checkX][worldY] !== undefined && scene.worldMap[checkX][worldY] === 0)
+				camera.position.x -= camera.direction.x * (4 / fps);
+			if (scene.worldMap[worldX] !== undefined && scene.worldMap[worldX][checkY] !== undefined && scene.worldMap[worldX][checkY] === 0)
+				camera.position.y -= camera.direction.y * (4 / fps);
 		}
 
 		if (keysDown["h"]) {
@@ -92,8 +116,8 @@ window.addEventListener("keyup", (e) => {
 
 animate();
 
-function addNewPlayer(id,x,y) {
-	var player = new Pseudo3D.Sprite(Boonga,[x,y]);
+function addNewPlayer(id, x, y) {
+	var player = new Pseudo3D.Sprite(Boonga, [x, y]);
 	player.partialAlpha = false;
 	playerMap[id] = player;
 	scene.add(player)
@@ -105,11 +129,10 @@ function removePlayer(id) {
 	scene.remove(player);
 }
 
-function moveOtherPlayer(id,x,y) {
-	if(id === window.myID){
+function moveOtherPlayer(id, x, y) {
+	if (id === window.myID) {
 		return;
 	}
 	playerMap[id].position.x = x;
 	playerMap[id].position.y = y;
 }
-
