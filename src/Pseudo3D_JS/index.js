@@ -13,6 +13,9 @@ var camera = new Pseudo3D.Camera({
 	planeLength: 0.75,
 	x: Math.random() * 24,
 	y: Math.random() * 24,
+	spriteSettings: {
+		partialAlpha: false
+	}
 });
 
 // update loop variable declarations
@@ -36,6 +39,10 @@ function start() {
 }
 
 start();
+
+function becomeEnemy() {
+	Client.becomeEnemy();
+}
 
 // main update loop
 function animate() {
@@ -116,11 +123,17 @@ window.addEventListener("keyup", (e) => {
 
 animate();
 
+function addEnemy(id) {
+	playerMap[id].setTexture(Minitor);
+	playerMap[id].position.z = 0.5;
+}
+
 function addNewPlayer(id, x, y) {
 	var player = new Pseudo3D.Sprite(Boonga, [x, y]);
 	player.partialAlpha = false;
 	playerMap[id] = player;
 	scene.add(player)
+
 }
 
 function removePlayer(id) {

@@ -23,6 +23,9 @@ io.on('connection',function(socket){
 
     // socket.on("newplayer", playerJoined);
     // socket.on("disconnect", playerLeft);
+    socket.on('becomeEnemy', function(id){
+        socket.broadcast.emit('EnemyHasSpawned', id);
+    });
 
     socket.on('newplayer',function(data){
         socket.player = {

@@ -22,6 +22,11 @@ Client.sendPos = function(x,y){
   Client.socket.emit('sendPos',{x:x,y:y});
 };
 
+Client.becomeEnemy = function(id){
+  Client.socket.emit('becomeEnemy', window.myID);
+};
+
+
 Client.socket.on('newplayer',function(data){
     addNewPlayer(data.id,data.x,data.y);
 });
@@ -34,6 +39,9 @@ Client.socket.on('updatePlayers', function(data){
     console.log(data)
 });
 
+Client.socket.on('EnemyHasSpawned', function(id){
+    addEnemy(id);
+});
 
 Client.socket.on('allplayers',function(data){
     for(var i = 0; i < data.length; i++){
