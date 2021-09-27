@@ -8,6 +8,7 @@ var wood = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/wood.png", [110, 74, 29]
 var Dora = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Dora.png", [])
 var Boonga = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Boonga.png")
 var Minotaur = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Minotaur.png", [], 128, 128);
+var Gnome = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Gnome.png", [], 121, 213);
 
 var config = {
 	floor: {

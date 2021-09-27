@@ -11,8 +11,8 @@ var camera = new Pseudo3D.Camera({
 	type: Pseudo3D.RenderTypes.RAY,
 	nearClippingPlane: 0,
 	planeLength: 0.75,
-	x: Math.random() * 24,
-	y: Math.random() * 24,
+	x: 10.5,
+	y: 12,
 	spriteSettings: {
 		partialAlpha: false
 	}
@@ -23,7 +23,9 @@ var stop = false;
 var fps = 60, // can only be a factor of 60 when below 30, and when above 30 can only be 60 - fps factor of 60 to work. 
 	frameCount = 0,
 	skipFrames,
-	frameRate = 0;
+	frameRate = 60,
+	fc = 0,
+	f = 0;
 // list of valid values for fps are: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 40, 45, 48, 50, 54, 55, 56, 57, 58, 59, 60
 
 if (fps > 30) {
@@ -55,14 +57,14 @@ function animate() {
 
 	if ((fps >= 30 && frameCount % skipFrames !== 0) || (fps < 30 && frameCount % skipFrames === 0)) {
 		if (keysDown["a"]) {
-			camera.rotate(270 / fps);
+			camera.rotate(270 / frameRate);
 		}
 		if (keysDown["d"]) {
-			camera.rotate(-270 / fps);
+			camera.rotate(-270 / frameRate);
 		}
 		if (keysDown["w"]) {
-			var incrementX = camera.direction.x * (4 / fps + 0.2);
-			var incrementY = camera.direction.y * (4 / fps + 0.2);
+			var incrementX = camera.direction.x * (3 / frameRate + 0.2);
+			var incrementY = camera.direction.y * (3 / frameRate + 0.2);
 
 			var worldX = Math.floor(camera.position.x);
 			var worldY = Math.floor(camera.position.y);
@@ -71,13 +73,13 @@ function animate() {
 			var checkY = Math.floor(camera.position.y + incrementY);
 
 			if (scene.worldMap[checkX] !== undefined && scene.worldMap[checkX][worldY] !== undefined && scene.worldMap[checkX][worldY] === 0)
-				camera.position.x += camera.direction.x * (4 / fps);
+				camera.position.x += camera.direction.x * (3 / frameRate);
 			if (scene.worldMap[worldX] !== undefined && scene.worldMap[worldX][checkY] !== undefined && scene.worldMap[worldX][checkY] === 0)
-				camera.position.y += camera.direction.y * (4 / fps);
+				camera.position.y += camera.direction.y * (3 / frameRate);
 		}
 		if (keysDown["s"]) {
-			var incrementX = camera.direction.x * (4 / fps + 0.2);
-			var incrementY = camera.direction.y * (4 / fps + 0.2);
+			var incrementX = camera.direction.x * (3 / frameRate + 0.2);
+			var incrementY = camera.direction.y * (3 / frameRate + 0.2);
 
 			var worldX = Math.floor(camera.position.x);
 			var worldY = Math.floor(camera.position.y);
@@ -86,9 +88,9 @@ function animate() {
 			var checkY = Math.floor(camera.position.y - incrementY);
 
 			if (scene.worldMap[checkX] !== undefined && scene.worldMap[checkX][worldY] !== undefined && scene.worldMap[checkX][worldY] === 0)
-				camera.position.x -= camera.direction.x * (4 / fps);
+				camera.position.x -= camera.direction.x * (3 / frameRate);
 			if (scene.worldMap[worldX] !== undefined && scene.worldMap[worldX][checkY] !== undefined && scene.worldMap[worldX][checkY] === 0)
-				camera.position.y -= camera.direction.y * (4 / fps);
+				camera.position.y -= camera.direction.y * (3 / frameRate);
 		}
 
 		if (keysDown["h"]) {
@@ -103,7 +105,7 @@ function animate() {
 		}
 		renderer.drawingContext.fillRect(0, 0, 900, 600);
 		renderer.render(scene, camera);
-
+		fc++;
 
 		if (pos[0] !== camera.position.x || pos[1] !== camera.position.y) {
 			Client.sendPos(camera.position.x, camera.position.y)
@@ -125,13 +127,16 @@ animate();
 
 function addEnemy(id) {
 	playerMap[id].setTexture(Minotaur);
+	playerMap[id].size = 1;
 	playerMap[id].position.z = (playerMap[id].height / scene.gameObjects.resolution[1]) / 4;
 }
 
 function addNewPlayer(id, x, y) {
-	var player = new Pseudo3D.Sprite(Boonga, [x, y]);
+	var player = new Pseudo3D.Sprite(Gnome, [x, y]);
 	player.partialAlpha = false;
 	playerMap[id] = player;
+	playerMap[id].size = 0.2;
+	playerMap[id].position.z = -0.15;
 	scene.add(player)
 
 }
@@ -149,3 +154,8 @@ function moveOtherPlayer(id, x, y) {
 	playerMap[id].position.x = x;
 	playerMap[id].position.y = y;
 }
+
+setInterval(() => {
+	frameRate = fc - f;
+	f = fc
+}, 1000);

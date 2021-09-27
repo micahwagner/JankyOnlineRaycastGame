@@ -40,11 +40,11 @@ io.on('connection',function(socket){
         socket.on('sendPos',function(data){
             socket.player.x = data.x;
             socket.player.y = data.y;
-            io.emit('move',socket.player);
+            socket.broadcast.emit('move',socket.player);
         });
 
         socket.on('disconnect',function(){
-            io.emit('remove',socket.player.id);
+            socket.broadcast.emit('remove',socket.player.id);
         });
     });
 
