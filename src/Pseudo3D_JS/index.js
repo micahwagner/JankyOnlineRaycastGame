@@ -124,8 +124,8 @@ window.addEventListener("keyup", (e) => {
 animate();
 
 function addEnemy(id) {
-	playerMap[id].setTexture(Minitor);
-	playerMap[id].position.z = 0.5;
+	playerMap[id].setTexture(Minotaur);
+	playerMap[id].position.z = (playerMap[id].height / scene.gameObjects.resolution[1]) / 4;
 }
 
 function addNewPlayer(id, x, y) {

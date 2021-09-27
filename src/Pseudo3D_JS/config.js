@@ -7,7 +7,7 @@ var barrel = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/barrel.png", [65, 26, 
 var wood = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/wood.png", [110, 74, 29]);
 var Dora = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Dora.png", [])
 var Boonga = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Boonga.png")
-var Minitor = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Minatour.png", [], 128, 128);
+var Minotaur = new Pseudo3D.Texture("./src/Pseudo3D_JS/pics/Minotaur.png", [], 128, 128);
 
 var config = {
 	floor: {
