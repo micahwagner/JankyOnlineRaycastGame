@@ -1,4 +1,4 @@
-class Player {
+class Enemy {
 	constructor(id, x, y, hp) {
 		this.id = id;
 		this.x = x;
@@ -7,4 +7,4 @@ class Player {
 	}
 }
 
-module.exports = Player;
+module.exports = Enemy;

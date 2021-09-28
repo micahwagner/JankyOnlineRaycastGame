@@ -3,6 +3,8 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 const Game = require('./Game');
+const Player = require('./player');
+const Enemy = require('./enemy');
 
 app.use('/css',express.static(process.cwd() + '/css'));
 app.use('/src',express.static(process.cwd() + '/src'));
@@ -10,7 +12,9 @@ app.get('/',function(req,res){
     res.sendFile(process.cwd()+'/index.html');
 });
 
-server.lastPlayderID = 0;
+
+var serverPlayerMap = [];
+var serverEnemyMap = [];
 
 server.listen(process.env.PORT || 8081, "10.0.0.17", function(){
     console.log('Listening on '+server.address().port);
@@ -23,28 +27,77 @@ io.on('connection',function(socket){
 
     // socket.on("newplayer", playerJoined);
     // socket.on("disconnect", playerLeft);
-    socket.on('becomeEnemy', function(id){
-        socket.broadcast.emit('EnemyHasSpawned', id);
-    });
 
     socket.on('newplayer',function(data){
         socket.player = {
-            id: server.lastPlayderID++,
+            id: socket.id,
             x: data.x,
             y: data.y,
         };
+
+        //update server player map, emit current ID, emit other players
+        serverPlayerMap.push(new Player(socket.player.id, socket.player.x, socket.player.y, 10));
         socket.emit('myID', socket.player.id);
         socket.emit('allplayers',getAllPlayers());
         socket.broadcast.emit('newplayer',socket.player);
+
+        //broadcast any enemy's that are already in the game
+        var enemyIDs = getAllPlayerEnemyID();
+        if (serverEnemyMap.length >= 1) {
+            socket.emit('loadEnemys', enemyIDs);
+        }
 
         socket.on('sendPos',function(data){
             socket.player.x = data.x;
             socket.player.y = data.y;
             socket.broadcast.emit('move',socket.player);
+
+
+            //update server player map
+            var playerIndex = serverPlayerMap.findIndex(p => p.id === socket.player.id);
+            if(playerIndex > -1) {
+                serverPlayerMap[playerIndex].x = data.x;
+                serverPlayerMap[playerIndex].y = data.y;
+            }
+
+            //var distFromEnemy = checkDistFromPlayer(data.x, data.y, );
+
+            //if (distFromEnemy > 1);
         });
 
         socket.on('disconnect',function(){
             socket.broadcast.emit('remove',socket.player.id);
+
+            //remove enemy from enemy map when disconnected 
+            var enemyIndex = serverEnemyMap.findIndex(p => p.id === socket.player.id);
+            if(enemyIndex > -1) {
+                serverEnemyMap.splice(enemyIndex, 1);
+            }
+
+
+            //remove player from player map when disconnected
+            var playerIndex = serverPlayerMap.findIndex(p => p.id === socket.player.id);
+            if(playerIndex > -1) { 
+                serverPlayerMap.splice(playerIndex, 1);
+            }
+
+        });
+
+        socket.on('becomeEnemy', function(id){
+            //transfer data from playerMap to enemyMap
+            console.log("u");
+            var playerIndex = serverPlayerMap.findIndex(p => p.id === socket.player.id); 
+            console.log("pyp");           
+            serverEnemyMap.push(new Enemy(serverPlayerMap[playerIndex].id, 
+                serverPlayerMap[playerIndex].x, 
+                serverPlayerMap[playerIndex].y,
+                serverPlayerMap[playerIndex].hp
+            ));
+            console.log(serverEnemyMap);
+            serverPlayerMap.splice(playerIndex, 1);
+            socket.broadcast.emit('loadEnemys', getAllPlayerEnemyID());
+            console.log(getAllPlayerEnemyID());
+
         });
     });
 
@@ -63,6 +116,11 @@ io.on('connection',function(socket){
 //     game.removePlayer(this);
 // }
 
+function checkDistPlayer(x, y, x, y) {
+
+    
+}
+
 function getAllPlayers(){
     var players = [];
     Object.keys(io.sockets.connected).forEach(function(socketID){
@@ -70,6 +128,15 @@ function getAllPlayers(){
         if(player) players.push(player);
     });
     return players;
+}
+
+function getAllPlayerEnemyID(){
+    var enemyIDs = [];
+
+    serverEnemyMap.forEach(function(enemy) {
+        enemyIDs.push(enemy.id);
+    });
+    return enemyIDs;
 }
 
 function randomInt (low, high) {

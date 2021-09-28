@@ -1,4 +1,4 @@
-var playerMap = {};
+var playerMap = [];
 
 // Pseudo3D declarations
 var scene = new Pseudo3D.Scene(config);
@@ -125,10 +125,19 @@ window.addEventListener("keyup", (e) => {
 
 animate();
 
+
+//doesn't work rn
 function addEnemy(id) {
-	playerMap[id].setTexture(Minotaur);
-	playerMap[id].size = 1;
-	playerMap[id].position.z = (playerMap[id].height / scene.gameObjects.resolution[1]) / 4;
+	for(var prop in playerMap){
+  		var enemyIDNum = id.indexOf(prop);
+  		// If property doesn't exist in array...
+  		if(id.indexOf(prop) > -1){
+  			console.log(id[id.indexOf(prop)]);
+    		playerMap[id[enemyIDNum]].setTexture(Minotaur);
+			playerMap[id[enemyIDNum]].size = 1;
+			playerMap[id[enemyIDNum]].position.z = (playerMap[id[enemyIDNum]].height / scene.gameObjects.resolution[1]) / 4;
+  		}  
+	}
 }
 
 function addNewPlayer(id, x, y) {
