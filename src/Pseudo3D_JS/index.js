@@ -52,6 +52,7 @@ start();
 
 function becomeEnemy() {
 	Client.becomeEnemy();
+	camera.position.z = 1;
 }
 
 // main update loop
