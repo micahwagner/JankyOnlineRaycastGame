@@ -23,9 +23,10 @@ server.listen(process.env.PORT || 8081, "10.0.0.17", function(){
 io.on('connection',function(socket){
 
     // console.log(socket.id);
-
+    //create entity class
 
     // socket.on("newplayer", playerJoined);
+    // socket.on("entityMoved", entityMoved)
     // socket.on("disconnect", playerLeft);
 
     socket.on('newplayer',function(data){
@@ -85,18 +86,14 @@ io.on('connection',function(socket){
 
         socket.on('becomeEnemy', function(id){
             //transfer data from playerMap to enemyMap
-            console.log("u");
             var playerIndex = serverPlayerMap.findIndex(p => p.id === socket.player.id); 
-            console.log("pyp");           
             serverEnemyMap.push(new Enemy(serverPlayerMap[playerIndex].id, 
                 serverPlayerMap[playerIndex].x, 
                 serverPlayerMap[playerIndex].y,
                 serverPlayerMap[playerIndex].hp
             ));
-            console.log(serverEnemyMap);
             serverPlayerMap.splice(playerIndex, 1);
             socket.broadcast.emit('loadEnemys', getAllPlayerEnemyID());
-            console.log(getAllPlayerEnemyID());
 
         });
     });
@@ -107,9 +104,12 @@ io.on('connection',function(socket){
 });
 
 // var game = new Game();
+// create method that retreives correct entity from specified map
+// create method to add entity to correct entity map (enemymap, playermap, itemmap, etc.....)
 
 // function playerJoined(data) {
-//     game.addPlayer(this, data);
+//     send all existing entitys to player that joined (items, player, enemys, etc...)
+//     game.initializePlayer(this, data);
 // }
 
 // function playerLeft() {
