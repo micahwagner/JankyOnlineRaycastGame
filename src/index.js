@@ -1,4 +1,13 @@
 var playerMap = [];
+var testGnome = {
+	directional: new DirectionalObject([GnomeFront, GnomeLeft, GnomeBack, GnomeRight], [2.5, 2.5], []),
+	sprite : new Pseudo3D.Sprite(GnomeFront, [2.5, 2.5], [-1, 0]),
+};
+
+testGnome.sprite.size = 0.2;
+testGnome.sprite.position.z = -0.15;
+testGnome.directional.direction = testGnome.sprite.direction;
+config.gameObjects.list.push(testGnome.sprite);
 
 // Pseudo3D declarations
 var scene = new Pseudo3D.Scene(config);
@@ -12,8 +21,8 @@ var camera = new Pseudo3D.Camera({
 	type: Pseudo3D.RenderTypes.RAY,
 	nearClippingPlane: 0,
 	planeLength: 0.75,
-	x: 10.5,
-	y: 12,
+	x: 2.5,
+	y: 2.5,
 	spriteSettings: {
 		partialAlpha: false
 	}
@@ -45,14 +54,19 @@ if (fps > 30) {
 var q = 0;
 
 function start() {
-	Client.sendMe(camera.position.x, camera.position.y);
+	Client.sendMe(camera.position.x, camera.position.y, camera.direction);
 }
 
 start();
 
 function becomeEnemy() {
 	Client.becomeEnemy();
-	camera.position.z = 1;
+	camera.position.z = 0.95;
+	moveSpeed = 4;
+	scene.lighting.cameraLight.intensity = 3;
+	scene.lighting.cameraLight.maxBrightness = 1.1;
+	scene.lighting.cameraLight.ambient = 0.3;
+	scene.lighting.cameraLight.colorBias[0] = 1.5;
 }
 
 // main update loop
@@ -95,6 +109,8 @@ function animate() {
 		if (pos[0] !== camera.position.x || pos[1] !== camera.position.y) {
 			Client.sendPos(camera.position.x, camera.position.y)
 		}
+
+
 	}
 	frameCount++;
 }
@@ -157,7 +173,7 @@ function removePlayer(id) {
 	scene.remove(player);
 }
 
-function moveOtherPlayer(id, x, y) {
+function updatePlayerTransform(id, x, y,d) {
 	if (id === window.myID) {
 		return;
 	}
@@ -169,6 +185,11 @@ setInterval(() => {
 	frameRate = fc - f;
 	f = fc
 }, 1000);
+
+setInterval(() => {
+	testGnome.directional.orient(camera.position.x, camera.position.y);
+	testGnome.sprite.setTexture(testGnome.directional.face);
+}, 100);
 
 var mouseX = 0;
 var mouseY = 0;

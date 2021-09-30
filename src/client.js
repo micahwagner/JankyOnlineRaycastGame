@@ -10,12 +10,12 @@ Client.sendTest = function(){
     Client.socket.emit('test');
 };
 
-Client.askNewPlayer = function(x,y){
-    Client.socket.emit('newplayer', {x:x, y:y});
-};
+// Client.askNewPlayer = function(x,y){
+//     Client.socket.emit('newplayer', {x:x, y:y});
+// };
 
-Client.sendMe = function(x,y){
-    Client.socket.emit('newplayer', {x:x, y:y});
+Client.sendMe = function(x,y, dir){
+    Client.socket.emit('newplayer', {x:x, y:y, d:dir});
 };
 
 Client.sendPos = function(x,y){
@@ -28,7 +28,7 @@ Client.becomeEnemy = function(id){
 
 
 Client.socket.on('newplayer',function(data){
-    addNewPlayer(data.id,data.x,data.y);
+    addNewPlayer(data.id,data.x,data.y,data.d);
 });
 
 Client.socket.on('myID', function(id){
@@ -39,19 +39,19 @@ Client.socket.on('updatePlayers', function(data){
     console.log(data)
 });
 
-Client.socket.on('loadEnemys', function(ids){
+Client.socket.on('loadPlayerEnemys', function(ids){
     addEnemy(ids);
 });
 
 Client.socket.on('allplayers',function(data){
     for(var i = 0; i < data.length; i++){
         if(data[i].id !== window.myID) {
-            addNewPlayer(data[i].id,data[i].x,data[i].y);
+            addNewPlayer(data[i].id,data[i].x,data[i].y,data[i].d);
         }
     }
 
-    Client.socket.on('move',function(data){
-        moveOtherPlayer(data.id,data.x,data.y);
+    Client.socket.on('changedTransform',function(data){
+        updatePlayerTransform(data.id,data.x,data.y);
     });
 
     Client.socket.on('remove',function(id){

@@ -34,6 +34,7 @@ io.on('connection',function(socket){
             id: socket.id,
             x: data.x,
             y: data.y,
+            d: data.d
         };
 
         //update server player map, emit current ID, emit other players
@@ -45,13 +46,13 @@ io.on('connection',function(socket){
         //broadcast any enemy's that are already in the game
         var enemyIDs = getAllPlayerEnemyID();
         if (serverEnemyMap.length >= 1) {
-            socket.emit('loadEnemys', enemyIDs);
+            socket.emit('loadPlayerEnemys', enemyIDs);
         }
 
         socket.on('sendPos',function(data){
             socket.player.x = data.x;
             socket.player.y = data.y;
-            socket.broadcast.emit('move',socket.player);
+            socket.broadcast.emit('changedTransform',socket.player);
 
 
             //update server player map
@@ -93,7 +94,7 @@ io.on('connection',function(socket){
                 serverPlayerMap[playerIndex].hp
             ));
             serverPlayerMap.splice(playerIndex, 1);
-            socket.broadcast.emit('loadEnemys', getAllPlayerEnemyID());
+            socket.broadcast.emit('loadPlayerEnemys', getAllPlayerEnemyID());
 
         });
     });
