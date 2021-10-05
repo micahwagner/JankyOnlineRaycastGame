@@ -1,13 +1,6 @@
 var playerMap = [];
-var testGnome = {
-	directional: new DirectionalObject([GnomeFront, GnomeLeft, GnomeBack, GnomeRight], [2.5, 2.5], []),
-	sprite : new Pseudo3D.Sprite(GnomeFront, [2.5, 2.5], [-1, 0]),
-};
+var isEnemy = false;
 
-testGnome.sprite.size = 0.2;
-testGnome.sprite.position.z = -0.15;
-testGnome.directional.direction = testGnome.sprite.direction;
-config.gameObjects.list.push(testGnome.sprite);
 
 // Pseudo3D declarations
 var scene = new Pseudo3D.Scene(config);
@@ -67,11 +60,13 @@ function becomeEnemy() {
 	scene.lighting.cameraLight.maxBrightness = 1.1;
 	scene.lighting.cameraLight.ambient = 0.3;
 	scene.lighting.cameraLight.colorBias[0] = 1.5;
+	isEnemy = true;
 }
 
 // main update loop
 function animate() {
 	var pos = [camera.position.x, camera.position.y];
+	var dir = [camera.direction.x, camera.direction.y];
 	if (stop) {
 		return;
 	}
@@ -108,6 +103,10 @@ function animate() {
 
 		if (pos[0] !== camera.position.x || pos[1] !== camera.position.y) {
 			Client.sendPos(camera.position.x, camera.position.y)
+		}
+
+		if (dir[0] !== camera.direction.x || dir[1] !== camera.position.y) {
+			Client.sendDir(camera.direction.x, camera.direction.y)
 		}
 
 
@@ -150,35 +149,51 @@ function addEnemy(id) {
 		// If property doesn't exist in array...
 		if (id.indexOf(prop) > -1) {
 			console.log(id[id.indexOf(prop)]);
-			playerMap[id[enemyIDNum]].setTexture(Minotaur);
-			playerMap[id[enemyIDNum]].size = 1;
-			playerMap[id[enemyIDNum]].position.z = (playerMap[id[enemyIDNum]].height / scene.gameObjects.resolution[1]) / 4;
+			playerMap[id[enemyIDNum]].isEnemy = true;
+			playerMap[id[enemyIDNum]].sprite.setTexture(Minotaur);
+			playerMap[id[enemyIDNum]].sprite.size = 1;
+			playerMap[id[enemyIDNum]].sprite.position.z = (playerMap[id[enemyIDNum]].sprite.height / scene.gameObjects.resolution[1]) / 4;
 		}
 	}
 }
 
-function addNewPlayer(id, x, y) {
-	var player = new Pseudo3D.Sprite(Gnome, [x, y]);
-	player.partialAlpha = false;
+function addNewPlayer(id, x, y, d) {
+	var player = {
+		isEnemy: false,
+		directional: new DirectionalObject([GnomeLeft, GnomeFront, GnomeRight, GnomeBack], [2.5, 2.5], [d[0], d[1]]),
+		sprite : new Pseudo3D.Sprite(GnomeFront, [2.5, 2.5], [d[0], d[1]]),
+	};
+	player.sprite.partialAlpha = false;
 	playerMap[id] = player;
-	playerMap[id].size = 0.2;
-	playerMap[id].position.z = -0.15;
-	scene.add(player)
+	playerMap[id].sprite.size = 0.2;
+	playerMap[id].sprite.position.z = -0.15;
+	scene.add(player.sprite);
 
 }
 
 function removePlayer(id) {
 	var player = playerMap[id];
 	delete playerMap[id];
-	scene.remove(player);
+	scene.remove(player.sprite);
 }
 
 function updatePlayerTransform(id, x, y,d) {
 	if (id === window.myID) {
 		return;
 	}
-	playerMap[id].position.x = x;
-	playerMap[id].position.y = y;
+	playerMap[id].sprite.position.x = x;
+	playerMap[id].sprite.position.y = y;
+	playerMap[id].directional.direction.x = d[0];
+	playerMap[id].directional.direction.y = d[1];
+	playerMap[id].directional.position.x = x;
+	playerMap[id].directional.position.y = y;
+
+	if (playerMap[id].sprite.isVisible) {
+		playerMap[id].directional.orient(camera.position.x, camera.position.y);
+	}
+	if (!playerMap[id].isEnemy) {
+		playerMap[id].sprite.setTexture(playerMap[id].directional.face);
+	}
 }
 
 setInterval(() => {
@@ -186,10 +201,7 @@ setInterval(() => {
 	f = fc
 }, 1000);
 
-setInterval(() => {
-	testGnome.directional.orient(camera.position.x, camera.position.y);
-	testGnome.sprite.setTexture(testGnome.directional.face);
-}, 100);
+
 
 var mouseX = 0;
 var mouseY = 0;

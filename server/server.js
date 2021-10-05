@@ -29,19 +29,20 @@ io.on('connection',function(socket){
     // socket.on("entityMoved", entityMoved)
     // socket.on("disconnect", playerLeft);
 
-    socket.on('newplayer',function(data){
+    socket.on('newPlayer',function(data){
         socket.player = {
             id: socket.id,
             x: data.x,
             y: data.y,
-            d: data.d
+            d: data.d,
+            isEnemy: false
         };
 
         //update server player map, emit current ID, emit other players
         serverPlayerMap.push(new Player(socket.player.id, socket.player.x, socket.player.y, 10));
         socket.emit('myID', socket.player.id);
         socket.emit('allplayers',getAllPlayers());
-        socket.broadcast.emit('newplayer',socket.player);
+        socket.broadcast.emit('newPlayer',socket.player);
 
         //broadcast any enemy's that are already in the game
         var enemyIDs = getAllPlayerEnemyID();
@@ -60,6 +61,22 @@ io.on('connection',function(socket){
             if(playerIndex > -1) {
                 serverPlayerMap[playerIndex].x = data.x;
                 serverPlayerMap[playerIndex].y = data.y;
+            }
+
+            //var distFromEnemy = checkDistFromPlayer(data.x, data.y, );
+
+            //if (distFromEnemy > 1);
+        });
+
+        socket.on('sendDir',function(data){
+            socket.player.d = [data.x, data.y];
+            socket.broadcast.emit('changedTransform',socket.player);
+
+
+            //update server player map
+            var playerIndex = serverPlayerMap.findIndex(p => p.id === socket.player.id);
+            if(playerIndex > -1) {
+                serverPlayerMap[playerIndex].d = [data.x, data.y];
             }
 
             //var distFromEnemy = checkDistFromPlayer(data.x, data.y, );

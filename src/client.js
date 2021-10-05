@@ -15,7 +15,7 @@ Client.sendTest = function(){
 // };
 
 Client.sendMe = function(x,y, dir){
-    Client.socket.emit('newplayer', {x:x, y:y, d:dir});
+    Client.socket.emit('newPlayer', {x:x, y:y, d:dir});
 };
 
 Client.sendPos = function(x,y){
@@ -26,8 +26,11 @@ Client.becomeEnemy = function(id){
     Client.socket.emit('becomeEnemy', window.myID);
 };
 
+Client.sendDir = function(x, y){
+    Client.socket.emit('sendDir', {x:x, y:y});
+};
 
-Client.socket.on('newplayer',function(data){
+Client.socket.on('newPlayer',function(data){
     addNewPlayer(data.id,data.x,data.y,data.d);
 });
 
@@ -51,7 +54,7 @@ Client.socket.on('allplayers',function(data){
     }
 
     Client.socket.on('changedTransform',function(data){
-        updatePlayerTransform(data.id,data.x,data.y);
+        updatePlayerTransform(data.id,data.x,data.y,data.d);
     });
 
     Client.socket.on('remove',function(id){
